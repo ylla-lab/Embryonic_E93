@@ -1,7 +1,7 @@
 # Project: filtering SRA data for insects to analyze E93 expression in embryo/egg vs. pupa (holometabolous) and embryo/egg vs. nymph/juvenile (a-, neo- and himimetabolous).
 
-Author: Gabriela Machaj
-Year: 2021
+- Author: Gabriela Machaj
+- Year: 2021
 
 ## List of annotated genomes
 
