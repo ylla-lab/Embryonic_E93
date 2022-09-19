@@ -4,7 +4,7 @@
 - Author: Gabriela Machaj
 - Date:  11/16/2021
 
-## Data dowloadade from NCBI - 16.11.2021
+## Data downloaded from NCBI - 16.11.2021
 
 https://www.ncbi.nlm.nih.gov/genome/?term= + SPECIES
 
