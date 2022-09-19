@@ -1,6 +1,6 @@
----
-title: "Genome_preparation, reads filtering and mapping RNA-Seq from E93-depleted and control embryos samples from *Blatella germanica*"
----
+- Gabriela Machaj
+- 09/03/2022
+
 
 # Genome_preparation, reads filtering and mapping RNA-Seq from E93-depleted and control embryos samples from Blatella germanica
  - Genome and annotation (source Guillem Y):
@@ -222,7 +222,12 @@ done;
 ```
 multiqc sam_bam/clean --filename multiqc_report_mapping
 ```
-## Table of counts, batch removal, DEA and enrichment GSEA done in R file:   E93_R_public.Rmd
+## Next:
+
+- Table of counts, batch removal, DEA and enrichment GSEA done in R file:   [E93_R_public.Rmd](https://github.com/ylla-lab/Embryonic_E93/blob/master/RNAseq_Bger_dsE93/2_E93_R_reads_count_to_GSEA.md)
+
+
+## Software versions
 
 - R version 4.1.2
 
