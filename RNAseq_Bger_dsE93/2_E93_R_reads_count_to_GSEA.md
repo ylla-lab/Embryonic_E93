@@ -1,3 +1,6 @@
+- Author: Gabriela Machaj
+- Date:  09/03/2022
+
 ## Load libraries
 
 ``` r
