@@ -1,5 +1,6 @@
-- Gabriela Machaj
-- 09/03/2022
+- Author: Gabriela Machaj
+- Date:  09/03/2022
+
 
 
 # Genome_preparation, reads filtering and mapping RNA-Seq from E93-depleted and control embryos samples from Blatella germanica
