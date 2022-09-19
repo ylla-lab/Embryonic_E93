@@ -1,64 +1,16 @@
----
-title: "Download_SRA_data_filter_gality_control_mapping-INSECTS-E93"
-author: "Gabi_M"
-output: html_document
----
-## Data 
-Filtered in R and manually SRA library names were listed  separatelly  for each example species_list 
+- Author: Gabriela Machaj
+- Year: 2021
 
-B.germanica
+# RNA-seq data analysis
 
-```
-SRR5656360
-SRR5656359
-SRR5656362
-SRR5656368
-SRR5656367
-SRR5656366
-SRR5656363
-SRR5656361
-SRR5656364
-SRR5656365
-SRR6784708
-SRR6784709
-```
-#### Species SRA lists:
+This script describes: RNA-seq data retrieval, the QC, reads trimming, and read mapping.
 
-- A.melliferan 
-- A.pisum
-- A.stephensi
-- B.mori
-- C.dipterum
- - C.floridanus
- - C.quinquefasciatus
- - D.melanogaster
- - H.saltator
- - M.sexta
- - N.ugens
- - T.castaneum
- - T.sarcophagae
- - A.gossypii
- - B.dorsalis
- - B.oleae
- - B.tabaci
- - D.citri
- - F.candida
- - H.illucens
- - L.heterotoma
- - M.genalis
- - M.pharaonis
- - O.brunneus
- - P.polytes
- - P.rapae
- - P.xylostella
- - S.exigua
- - S.frugiperda
- - V.tameamea
- - Z.cucurbitae
- - Z.nevadensis
-_-  G.bimaculatus
 
-## Data downloading and fastq-dump
+## RNA-seq data downloading with fastq-dump
+
+- List of species, and selected SRR samples in **species_list** .
+
+
 ```
 python  prefetch.py 
 ```
@@ -79,7 +31,8 @@ for line in open("species_list"):
     os.system("fastq-dump --outdir fastq --split-files sra/%s.sra" % (sample))
 ```
 
-### Check quality of raw fastq files
+## Check quality of raw fastq files
+
 ```
 for file in $(ls fastq/*.fastq | grep -v -i "Undetermined")
 do
@@ -90,13 +43,16 @@ do
 done
 ```
 
-#### Summarize QC
+### Summarize QC
+
 ```
 multiqc FastQC_raw --interactive --force --filename multiqc_raw
 ```
-### Trim reads with trim_galore
+
+## Trim reads with trim_galore
 
 - for single end reads
+
 ```
 python trimgalore_single.py
 ```
@@ -122,6 +78,7 @@ for line in open("species_list"):
 ```
 
 - for paired end reads
+
 ```
 python trimgalore_paired.py
 ```
@@ -145,7 +102,9 @@ for line in open("SRA_list"):
 
     os.system("TrimGalore-0.6.6/trim_galore --paired --phred33 --trim-n --cores %d  --output_dir fastq/trim_galore fastq/%s_1.fastq.gz fastq/%s_2.fastq.gz" % (args.threads, sample, sample) )
 ```
+
 ### Check quality after QC
+
 ```
 for file in $(ls trim_galore/*.fq | grep -v -i "Undetermined")
 do
@@ -156,13 +115,13 @@ do
 done
 ```
 
-#### Summarize QC
+### Summarize QC
 
 ```
 multiqc trim_galore/FastQC_tg --interactive --force --filename multiqc_trim_galore
 ```
 
-### Reads mapping
+## Reads mapping
 
 - for paired end reads
 ```
@@ -222,12 +181,12 @@ for line in open("SRA_list"):
     os.system("STAR --runThreadN %d --genomeDir data/species_name/genome_indexed_star --readFilesIn %s --outSAMtype BAM SortedByCoordinate --outFileNamePrefix bam/%s/" % (args.threads, read_files, sample) )
 ```
 
-#### Summarize mapping
+### Summarize mapping
 
 ```
 multiqc bam --interactive --force --filename multiqc_mapping
 ```
-#### Programs and versions:
+## Programs and versions:
 
 - STAR - v.2.7.9a
 - trim-galore v.0.6.7 
@@ -235,4 +194,6 @@ multiqc bam --interactive --force --filename multiqc_mapping
 - FastQC v.0.11.9
 
 
-### Next step count reads mapped to genes --> 4_R_featurecount.Rmd
+### Next step 
+
+- Count reads mapped to genes --> [4_R_featurecount.Rmd](https://github.com/ylla-lab/Embryonic_E93/blob/master/RNAseq_multipleSpp_E93exp/4_R_featurecount.Rmd)
