@@ -1,0 +1,66 @@
+---
+title: "SRA_featurecounts"
+author: "G.Machaj"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+
+```{r}
+library(DESeq2)
+library(Rsubread)
+library(edgeR)
+library(readr)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+## Featurecounts run for each species separatelly as follow:
+
+```{r}
+BAMfiles<- list.files(path="bam/",pattern = "*.out.bam$",full.names=TRUE)
+```
+
+
+```{r, cache=TRUE}
+annotation<-"data/species/annotation.gff"
+
+counts<- featureCounts(files=BAMfiles, isPairedEnd=TRUE,   #/FALSE for single end
+                              requireBothEndsMapped=FALSE,
+                              allowMultiOverlap=FALSE, 
+                              countMultiMappingReads=TRUE, 
+                              annot.ext=annotation,
+                              isGTFAnnotationFile=TRUE,
+                              GTF.featureType="gene",
+                              GTF.attrType="ID",
+                              useMetaFeatures=TRUE,
+                              nthreads=12)
+counts_df<-counts$counts
+
+write.csv(as.data.frame(counts_df), file = "counts.csv", row.names = T)
+```
+
+# RPKM noramlization
+
+```{r}
+
+normalized_RPKM<-rpkm(counts_df,counts$annotation[,c("Length")], normalized.lib.sizes=TRUE )
+```
+# TPM noramlization
+```{r}
+normalized_RPKM[is.na(normalized_RPKM)]<-0
+RPKM_sum=sum(normalized_RPKM/1000000)
+TPM=normalized_RPKM/(RPKM_sum)
+
+write.csv(TPM, file = "TPM.csv",  row.names=TRUE)
+```
+
+###  program versions:
+
+DESeq2_1.34.0 , edgeR_3.36.0 
+
+## next part -> ratio caluclation and plots --> 5_SRA_insects_ratios_neo.Rmd
+
