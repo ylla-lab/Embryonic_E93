@@ -1,0 +1,1705 @@
+---
+title: "SRA_insects_E93_ratios"
+author: "G.Machaj"
+date: "7 04 2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load libraries
+
+```{r, echo=T, message=FALSE,warning=FALSE}
+library(DESeq2)
+library(dplyr)
+library(ggplot2)
+library(Rsubread)
+library(ggrepel)
+library(edgeR)
+library(readr)
+```
+
+# Read TPM counts and metadata for PCA
+
+## Blattella germanica, E93, Hemimetabolous
+
+### read data
+ -  Load TPM table
+```{r}
+B.germanica_TPM <- read.csv("B.germanica_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_B.germanica <- read_delim("B.germanica_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_B.germanica_DF<-as.data.frame(Meatdata_ds3exp_B.germanica)
+rownames(Meatdata_ds3exp_B.germanica_DF)<-(Meatdata_ds3exp_B.germanica_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_B.germanica_TPM_long<-B.germanica_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(B.germanica_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_B.germanica_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_B.germanica_TPM<-ds_B.germanica_TPM_long %>%
+   filter(GeneID=="E93")
+E93_B.germanica_TPM
+
+#write.csv(E93_B.germanica_TPM, file = "E93_B.germanica_TPM.csv", row.names=TRUE)
+```
+
+## Gryllus bimaculatus, E93 =  GBI_04085, Hemimetabolous
+
+### read data
+ -  Load TPM table
+```{r}
+G.bimaculatus_TPM <- read.csv("G.bimaculatus_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_G.bimaculatus <- read_delim("G.bimaculatus_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_G.bimaculatus_DF<-as.data.frame(Meatdata_ds3exp_G.bimaculatus)
+rownames(Meatdata_ds3exp_G.bimaculatus_DF)<-(Meatdata_ds3exp_G.bimaculatus_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_G.bimaculatus_TPM_long<-G.bimaculatus_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(G.bimaculatus_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_G.bimaculatus_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_G.bimaculatus_TPM<-ds_G.bimaculatus_TPM_long %>%
+   filter(GeneID=="GBI_04085")
+E93_G.bimaculatus_TPM
+
+#write.csv(E93_G.bimaculatus_TPM, file = "E93_G.bimaculatus_TPM.csv", row.names=TRUE)
+```
+
+
+## Folsomia candida, gene-LOC110851286, Ametabolous
+
+### read data
+ -  Load TPM table
+```{r}
+F.candida_TPM <- read.csv("F.candida_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_F.candida <- read_delim("F.candida_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_F.candida_DF<-as.data.frame(Meatdata_ds3exp_F.candida)
+rownames(Meatdata_ds3exp_F.candida_DF)<-(Meatdata_ds3exp_F.candida_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_F.candida_TPM_long<-F.candida_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(F.candida_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_F.candida_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_F.candida_TPM<-ds_F.candida_TPM_long %>%
+   filter(GeneID=="gene-LOC110851286")
+E93_F.candida_TPM
+
+#write.csv(E93_F.candida_TPM, file = "E93_F.candida_TPM.csv", row.names=TRUE)
+```
+
+## Acyrthosiphon pisum, gene-LOC100161761, Hemimetabolous
+
+### read data
+ -  Load TPM table
+```{r}
+A.pisum_TPM <- read.csv("A.pisum_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_A.pisum <- read_delim("A.pisum_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_A.pisum_DF<-as.data.frame(Meatdata_ds3exp_A.pisum)
+rownames(Meatdata_ds3exp_A.pisum_DF)<-(Meatdata_ds3exp_A.pisum_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_A.pisum_TPM_long<-A.pisum_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(A.pisum_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_A.pisum_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_A.pisum_TPM<-ds_A.pisum_TPM_long %>%
+   filter(GeneID=="gene-LOC100161761")
+E93_A.pisum_TPM
+
+#write.csv(E93_A.pisum_TPM, file = "E93_A.pisum_TPM.csv", row.names=TRUE)
+```
+
+
+## Nilaparvata lugens, gene-LOC111052728, Hemimetabolous
+
+### read data
+ -  Load TPM table
+```{r}
+N.lugens_TPM <- read.csv("N.lugens_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_N.lugens <- read_delim("N.lugens_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_N.lugens_DF<-as.data.frame(Meatdata_ds3exp_N.lugens)
+rownames(Meatdata_ds3exp_N.lugens_DF)<-(Meatdata_ds3exp_N.lugens_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_N.lugens_TPM_long<-N.lugens_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(N.lugens_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_N.lugens_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_N.lugens_TPM<-ds_N.lugens_TPM_long %>%
+   filter(GeneID=="gene-LOC111052728")
+E93_N.lugens_TPM
+
+#write.csv(E93_N.lugens_TPM, file = "E93_N.lugens_TPM.csv", row.names=TRUE)
+```
+
+## Aphis gossypii gene-LOC114128046, Hemimetabolous
+
+### read data
+ -  Load TPM table
+```{r}
+A.gossypii_TPM <- read.csv("A.gossypii_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_A.gossypii <- read_delim("A.gossypii_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_A.gossypii_DF<-as.data.frame(Meatdata_ds3exp_A.gossypii)
+rownames(Meatdata_ds3exp_A.gossypii_DF)<-(Meatdata_ds3exp_A.gossypii_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_A.gossypii_TPM_long<-A.gossypii_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(A.gossypii_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_A.gossypii_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_A.gossypii_TPM<-ds_A.gossypii_TPM_long %>%
+   filter(GeneID=="gene-LOC114128046")
+E93_A.gossypii_TPM
+
+#write.csv(E93_A.gossypii_TPM, file = "E93_A.gossypii_TPM.csv", row.names=TRUE)
+```
+
+
+## Cloeon dipterum gene-CLODIP_2_CD15741, Hemimetabolous
+
+### read data
+ -  Load TPM table
+```{r}
+C.dipterum_TPM <- read.csv("C.dipterum_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_C.dipterum <- read_delim("C.dipterum_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_C.dipterum_DF<-as.data.frame(Meatdata_ds3exp_C.dipterum)
+rownames(Meatdata_ds3exp_C.dipterum_DF)<-(Meatdata_ds3exp_C.dipterum_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_C.dipterum_TPM_long<-C.dipterum_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(C.dipterum_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_C.dipterum_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_C.dipterum_TPM<-ds_C.dipterum_TPM_long %>%
+   filter(GeneID=="gene-CLODIP_2_CD15741")
+E93_C.dipterum_TPM
+
+#write.csv(E93_C.dipterum_TPM, file = "E93_C.dipterum_TPM.csv", row.names=TRUE)
+```
+
+## Zootermopsis nevadensis gene-LOC110827285, Hemimetabolous
+
+### read data
+ -  Load TPM table
+```{r}
+Z.nevadensis_TPM <- read.csv("Z.nevadensis_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_Z.nevadensis <- read_delim("Z.nevadensis_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_Z.nevadensis_DF<-as.data.frame(Meatdata_ds3exp_Z.nevadensis)
+rownames(Meatdata_ds3exp_Z.nevadensis_DF)<-(Meatdata_ds3exp_Z.nevadensis_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_Z.nevadensis_TPM_long<-Z.nevadensis_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(Z.nevadensis_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_Z.nevadensis_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_Z.nevadensis_TPM<-ds_Z.nevadensis_TPM_long %>%
+   filter(GeneID=="gene-LOC110827285")
+E93_Z.nevadensis_TPM
+
+#write.csv(E93_Z.nevadensis_TPM, file = "E93_Z.nevadensis_TPM.csv", row.names=TRUE)
+```
+
+
+## Bemisia tabaci gene-LOC109033008, Hemimetabolous
+
+### read data
+ -  Load TPM table
+```{r}
+B.tabaci_TPM <- read.csv("B.tabaci_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_B.tabaci <- read_delim("B.tabaci_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_B.tabaci_DF<-as.data.frame(Meatdata_ds3exp_B.tabaci)
+rownames(Meatdata_ds3exp_B.tabaci_DF)<-(Meatdata_ds3exp_B.tabaci_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_B.tabaci_TPM_long<-B.tabaci_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(B.tabaci_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_B.tabaci_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_B.tabaci_TPM<-ds_B.tabaci_TPM_long %>%
+   filter(GeneID=="gene-LOC109033008")
+E93_B.tabaci_TPM
+
+#write.csv(E93_B.tabaci_TPM, file = "E93_B.tabaci_TPM.csv", row.names=TRUE)
+```
+
+## Diaphorina citri gene-LOC103516559, Hemimetabolous
+
+### read data
+ -  Load TPM table
+```{r}
+D.citri_TPM <- read.csv("D.citri_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_D.citri <- read_delim("D.citri_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_D.citri_DF<-as.data.frame(Meatdata_ds3exp_D.citri)
+rownames(Meatdata_ds3exp_D.citri_DF)<-(Meatdata_ds3exp_D.citri_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_D.citri_TPM_long<-D.citri_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(D.citri_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_D.citri_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_D.citri_TPM<-ds_D.citri_TPM_long %>%
+   filter(GeneID=="gene-LOC103516559")
+E93_D.citri_TPM
+
+#write.csv(E93_D.citri_TPM, file = "E93_D.citri_TPM.csv", row.names=TRUE)
+```
+
+## Culex quinquefasciatus gene-LOC6046300, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+C.quinquefasciatus_TPM <- read.csv("C.quin_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_C.quinquefasciatus <- read_delim("C.quinquefasciatus_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_C.quinquefasciatus_DF<-as.data.frame(Meatdata_ds3exp_C.quinquefasciatus)
+rownames(Meatdata_ds3exp_C.quinquefasciatus_DF)<-(Meatdata_ds3exp_C.quinquefasciatus_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_C.quinquefasciatus_TPM_long<-C.quinquefasciatus_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(C.quinquefasciatus_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_C.quinquefasciatus_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_C.quinquefasciatus_TPM<-ds_C.quinquefasciatus_TPM_long %>%
+   filter(GeneID=="gene-LOC6046300")
+E93_C.quinquefasciatus_TPM
+
+#write.csv(E93_C.quinquefasciatus_TPM, file = "E93_C.quinquefasciatus_TPM.csv", row.names=TRUE)
+```
+
+
+## Zeugodacus cucurbitae gene-LOC105215468, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+Z.cucurbitae_TPM <- read.csv("Z.cucurbitae_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_Z.cucurbitae <- read_delim("Z.cucurbitae_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_Z.cucurbitae_DF<-as.data.frame(Meatdata_ds3exp_Z.cucurbitae)
+rownames(Meatdata_ds3exp_Z.cucurbitae_DF)<-(Meatdata_ds3exp_Z.cucurbitae_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_Z.cucurbitae_TPM_long<-Z.cucurbitae_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(Z.cucurbitae_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_Z.cucurbitae_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_Z.cucurbitae_TPM<-ds_Z.cucurbitae_TPM_long %>%
+   filter(GeneID=="gene-LOC105215468")
+E93_Z.cucurbitae_TPM
+
+#write.csv(E93_Z.cucurbitae_TPM, file = "E93_Z.cucurbitae_TPM.csv", row.names=TRUE)
+```
+
+## Camponotus floridanus gene-LOC105255462, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+C.floridanus_TPM <- read.csv("C.flori_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_C.floridanus <- read_delim("C.floridanus_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_C.floridanus_DF<-as.data.frame(Meatdata_ds3exp_C.floridanus)
+rownames(Meatdata_ds3exp_C.floridanus_DF)<-(Meatdata_ds3exp_C.floridanus_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_C.floridanus_TPM_long<-C.floridanus_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(C.floridanus_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_C.floridanus_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_C.floridanus_TPM<-ds_C.floridanus_TPM_long %>%
+   filter(GeneID=="gene-LOC105255462")
+E93_C.floridanus_TPM
+
+#write.csv(E93_C.floridanus_TPM, file = "E93_C.floridanus_TPM.csv", row.names=TRUE)
+```
+
+## Apis mellifera gene-Mblk-1, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+A.mellifera_TPM <- read.csv("A.mellifera_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_A.mellifera <- read_delim("A.mellifera_metadata.txt",
+     delim = "\t", escape_double = FALSE,
+     trim_ws = TRUE)
+```
+
+- As DF
+```{r}
+Meatdata_ds3exp_A.mellifera_DF<-as.data.frame(Meatdata_ds3exp_A.mellifera)
+rownames(Meatdata_ds3exp_A.mellifera_DF)<-(Meatdata_ds3exp_A.mellifera_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_A.mellifera_TPM_long<-A.mellifera_TPM %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "GeneID") %>%
+  pivot_longer(cols=colnames(A.mellifera_TPM),names_to="Sample", values_to="TPM") %>%
+   dplyr::left_join(Meatdata_ds3exp_A.mellifera_DF, by=c("Sample"="Sample"))
+```
+
+- E93 expression table
+```{r}
+ E93_A.mellifera_TPM<-ds_A.mellifera_TPM_long %>%
+   filter(GeneID=="gene-Mblk-1")
+E93_A.mellifera_TPM
+
+#write.csv(E93_A.mellifera_TPM, file = "E93_A.mellifera_TPM.csv", row.names=TRUE)
+```
+## Tribolium castaneum gene-LOC655012, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+T.castaneum_TPM <- read.csv("T.castaneum_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_T.castaneum <- read_delim("T.castaneum_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_T.castaneum_DF<-as.data.frame(Meatdata_ds3exp_T.castaneum)
+rownames(Meatdata_ds3exp_T.castaneum_DF)<-(Meatdata_ds3exp_T.castaneum_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_T.castaneum_TPM_long<-T.castaneum_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(T.castaneum_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_T.castaneum_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_T.castaneum_TPM<-ds_T.castaneum_TPM_long %>%
+   filter(GeneID=="gene-LOC655012")
+E93_T.castaneum_TPM
+
+#write.csv(E93_T.castaneum_TPM, file = "E93_T.castaneum_TPM.csv", row.names=TRUE)
+```
+
+## Harpegnathos saltator gene-LOC105183699, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+H.saltator_TPM <- read.csv("H.salt_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_H.saltator <- read_delim("H.saltator_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_H.saltator_DF<-as.data.frame(Meatdata_ds3exp_H.saltator)
+rownames(Meatdata_ds3exp_H.saltator_DF)<-(Meatdata_ds3exp_H.saltator_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_H.saltator_TPM_long<-H.saltator_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(H.saltator_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_H.saltator_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_H.saltator_TPM<-ds_H.saltator_TPM_long %>%
+   filter(GeneID=="gene-LOC105183699")
+E93_H.saltator_TPM
+
+#write.csv(E93_H.saltator_TPM, file = "E93_H.saltator_TPM.csv", row.names=TRUE)
+```
+
+## Manduca sexta gene-LOC115453157, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+M.sexta_TPM <- read.csv("M.sexta_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_M.sexta <- read_delim("M.sexta_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_M.sexta_DF<-as.data.frame(Meatdata_ds3exp_M.sexta)
+rownames(Meatdata_ds3exp_M.sexta_DF)<-(Meatdata_ds3exp_M.sexta_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_M.sexta_TPM_long<-M.sexta_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(M.sexta_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_M.sexta_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_M.sexta_TPM<-ds_M.sexta_TPM_long %>%
+   filter(GeneID=="gene-LOC115453157")
+E93_M.sexta_TPM
+
+#write.csv(E93_M.sexta_TPM, file = "E93_M.sexta_TPM.csv", row.names=TRUE)
+```
+## Plutella xylostella gene-LOC105385744, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+P.xylostella_TPM <- read.csv("P.xylostella_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_P.xylostella <- read_delim("P.xylostella_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_P.xylostella_DF<-as.data.frame(Meatdata_ds3exp_P.xylostella)
+rownames(Meatdata_ds3exp_P.xylostella_DF)<-(Meatdata_ds3exp_P.xylostella_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_P.xylostella_TPM_long<-P.xylostella_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(P.xylostella_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_P.xylostella_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_P.xylostella_TPM<-ds_P.xylostella_TPM_long %>%
+   filter(GeneID=="gene-LOC105385744")
+E93_P.xylostella_TPM
+
+#write.csv(E93_P.xylostella_TPM, file = "E93_P.xylostella_TPM.csv", row.names=TRUE)
+```
+## Bombyx mori gene-LOC101737038, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+B.mori_TPM <- read.csv("B.mori_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_B.mori <- read_delim("B.mori_metadata.txt",
+     delim = "\t", escape_double = FALSE,
+     trim_ws = TRUE)
+```
+
+- As DF
+```{r}
+Meatdata_ds3exp_B.mori_DF<-as.data.frame(Meatdata_ds3exp_B.mori)
+rownames(Meatdata_ds3exp_B.mori_DF)<-(Meatdata_ds3exp_B.mori_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_B.mori_TPM_long<-B.mori_TPM %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "GeneID") %>%
+  pivot_longer(cols=colnames(B.mori_TPM),names_to="Sample", values_to="TPM") %>%
+   dplyr::left_join(Meatdata_ds3exp_B.mori_DF, by=c("Sample"="Sample"))
+```
+
+- E93 expression table
+```{r}
+ E93_B.mori_TPM<-ds_B.mori_TPM_long %>%
+   filter(GeneID=="gene-LOC101737038")
+E93_B.mori_TPM
+
+#write.csv(E93_B.mori_TPM, file = "E93_B.mori_TPM.csv", row.names=TRUE)
+```
+
+## Leptopilina heterotoma gene-LOC122503059, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+L.heterotoma_TPM <- read.csv("L.heterotoma_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_L.heterotoma <- read_delim("L.heterotoma_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_L.heterotoma_DF<-as.data.frame(Meatdata_ds3exp_L.heterotoma)
+rownames(Meatdata_ds3exp_L.heterotoma_DF)<-(Meatdata_ds3exp_L.heterotoma_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_L.heterotoma_TPM_long<-L.heterotoma_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(L.heterotoma_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_L.heterotoma_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_L.heterotoma_TPM<-ds_L.heterotoma_TPM_long %>%
+   filter(GeneID=="gene-LOC122503059")
+E93_L.heterotoma_TPM
+
+#write.csv(E93_L.heterotoma_TPM, file = "E93_L.heterotoma_TPM.csv", row.names=TRUE)
+```
+
+## Odontomachus brunneus gene-LOC116848284, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+O.brunneus_TPM <- read.csv("O.brunneus_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_O.brunneus <- read_delim("O.brunneus_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_O.brunneus_DF<-as.data.frame(Meatdata_ds3exp_O.brunneus)
+rownames(Meatdata_ds3exp_O.brunneus_DF)<-(Meatdata_ds3exp_O.brunneus_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_O.brunneus_TPM_long<-O.brunneus_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(O.brunneus_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_O.brunneus_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_O.brunneus_TPM<-ds_O.brunneus_TPM_long %>%
+   filter(GeneID=="gene-LOC116848284")
+E93_O.brunneus_TPM
+
+#write.csv(E93_O.brunneus_TPM, file = "E93_O.brunneus_TPM.csv", row.names=TRUE)
+```
+## Anopheles stephensi gene-LOC118503280, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+A.stephensi_TPM <- read.csv("A.steph_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_A.stephensi <- read_delim("A.stephensi_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_A.stephensi_DF<-as.data.frame(Meatdata_ds3exp_A.stephensi)
+rownames(Meatdata_ds3exp_A.stephensi_DF)<-(Meatdata_ds3exp_A.stephensi_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_A.stephensi_TPM_long<-A.stephensi_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(A.stephensi_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_A.stephensi_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_A.stephensi_TPM<-ds_A.stephensi_TPM_long %>%
+   filter(GeneID=="gene-LOC118503280")
+E93_A.stephensi_TPM
+
+#write.csv(E93_A.stephensi_TPM, file = "E93_A.stephensi_TPM.csv", row.names=TRUE)
+```
+
+## Monomorium pharaonis gene-LOC105832848, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+M.pharaonis_TPM <- read.csv("M.pharaonis_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_M.pharaonis <- read_delim("M.pharaonis_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_M.pharaonis_DF<-as.data.frame(Meatdata_ds3exp_M.pharaonis)
+rownames(Meatdata_ds3exp_M.pharaonis_DF)<-(Meatdata_ds3exp_M.pharaonis_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_M.pharaonis_TPM_long<-M.pharaonis_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(M.pharaonis_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_M.pharaonis_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_M.pharaonis_TPM<-ds_M.pharaonis_TPM_long %>%
+   filter(GeneID=="gene-LOC105832848")
+E93_M.pharaonis_TPM
+
+#write.csv(E93_M.pharaonis_TPM, file = "E93_M.pharaonis_TPM.csv", row.names=TRUE)
+```
+## Hermetia illucens gene-LOC119657514, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+H.illucens_TPM <- read.csv("H.illucens_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_H.illucens <- read_delim("H.illucens_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_H.illucens_DF<-as.data.frame(Meatdata_ds3exp_H.illucens)
+rownames(Meatdata_ds3exp_H.illucens_DF)<-(Meatdata_ds3exp_H.illucens_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_H.illucens_TPM_long<-H.illucens_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(H.illucens_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_H.illucens_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_H.illucens_TPM<-ds_H.illucens_TPM_long %>%
+   filter(GeneID=="gene-LOC119657514")
+E93_H.illucens_TPM
+
+#write.csv(E93_H.illucens_TPM, file = "E93_H.illucens_TPM.csv", row.names=TRUE)
+```
+## Papilio polytes gene-LOC106106135, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+P.polytes_TPM <- read.csv("P.polytes_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_P.polytes <- read_delim("P.polytes_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_P.polytes_DF<-as.data.frame(Meatdata_ds3exp_P.polytes)
+rownames(Meatdata_ds3exp_P.polytes_DF)<-(Meatdata_ds3exp_P.polytes_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_P.polytes_TPM_long<-P.polytes_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(P.polytes_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_P.polytes_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_P.polytes_TPM<-ds_P.polytes_TPM_long %>%
+   filter(GeneID=="gene-LOC106106135")
+E93_P.polytes_TPM
+
+#write.csv(E93_P.polytes_TPM, file = "E93_P.polytes_TPM.csv", row.names=TRUE)
+```
+
+## Bactrocera dorsalis gene-LOC105226331, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+B.dorsalis_TPM <- read.csv("B.dorsalis_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_B.dorsalis <- read_delim("B.dorsalis_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_B.dorsalis_DF<-as.data.frame(Meatdata_ds3exp_B.dorsalis)
+rownames(Meatdata_ds3exp_B.dorsalis_DF)<-(Meatdata_ds3exp_B.dorsalis_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_B.dorsalis_TPM_long<-B.dorsalis_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(B.dorsalis_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_B.dorsalis_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_B.dorsalis_TPM<-ds_B.dorsalis_TPM_long %>%
+   filter(GeneID=="gene-LOC105226331")
+E93_B.dorsalis_TPM
+
+#write.csv(E93_B.dorsalis_TPM, file = "E93_B.dorsalis_TPM.csv", row.names=TRUE)
+```
+
+## Vanessa tameamea gene-LOC113396009, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+V.tameamea_TPM <- read.csv("V.tameamea_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_V.tameamea <- read_delim("V.tameamea_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_V.tameamea_DF<-as.data.frame(Meatdata_ds3exp_V.tameamea)
+rownames(Meatdata_ds3exp_V.tameamea_DF)<-(Meatdata_ds3exp_V.tameamea_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_V.tameamea_TPM_long<-V.tameamea_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(V.tameamea_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_V.tameamea_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_V.tameamea_TPM<-ds_V.tameamea_TPM_long %>%
+   filter(GeneID=="gene-LOC113396009")
+E93_V.tameamea_TPM
+
+#write.csv(E93_V.tameamea_TPM, file = "E93_V.tameamea_TPM.csv", row.names=TRUE)
+```
+## Pieris rapae gene-LOC111002879, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+P.rapae_TPM <- read.csv("P.rapae_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_P.rapae <- read_delim("P.rapae_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_P.rapae_DF<-as.data.frame(Meatdata_ds3exp_P.rapae)
+rownames(Meatdata_ds3exp_P.rapae_DF)<-(Meatdata_ds3exp_P.rapae_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_P.rapae_TPM_long<-P.rapae_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(P.rapae_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_P.rapae_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_P.rapae_TPM<-ds_P.rapae_TPM_long %>%
+   filter(GeneID=="gene-LOC111002879")
+E93_P.rapae_TPM
+
+#write.csv(E93_P.rapae_TPM, file = "E93_P.rapae_TPM.csv", row.names=TRUE)
+```
+
+## Spodoptera exigua gene-HW555_010051, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+S.exigua_TPM <- read.csv("S.exigua_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_S.exigua <- read_delim("S.exigua_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_S.exigua_DF<-as.data.frame(Meatdata_ds3exp_S.exigua)
+rownames(Meatdata_ds3exp_S.exigua_DF)<-(Meatdata_ds3exp_S.exigua_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_S.exigua_TPM_long<-S.exigua_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(S.exigua_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_S.exigua_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_S.exigua_TPM<-ds_S.exigua_TPM_long %>%
+   filter(GeneID=="gene-HW555_010051")
+E93_S.exigua_TPM
+
+#write.csv(E93_S.exigua_TPM, file = "E93_S.exigua_TPM.csv", row.names=TRUE)
+```
+## Drosophila melanogaster  gene-Eip93F = Dmel_CG18389, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+D.melanogaster_TPM <- read.csv("D.melanogaster_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_D.melanogaster <- read_delim("D.melanogaster_metadata.txt",
+     delim = "\t", escape_double = FALSE,
+     trim_ws = TRUE)
+```
+
+- As DF
+```{r}
+Meatdata_ds3exp_D.melanogaster_DF<-as.data.frame(Meatdata_ds3exp_D.melanogaster)
+rownames(Meatdata_ds3exp_D.melanogaster_DF)<-(Meatdata_ds3exp_D.melanogaster_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_D.melanogaster_TPM_long<-D.melanogaster_TPM %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "GeneID") %>%
+  pivot_longer(cols=colnames(D.melanogaster_TPM),names_to="Sample", values_to="TPM") %>%
+   dplyr::left_join(Meatdata_ds3exp_D.melanogaster_DF, by=c("Sample"="Sample"))
+```
+
+- E93 expression table
+```{r}
+ E93_D.melanogaster_TPM<-ds_D.melanogaster_TPM_long %>%
+   filter(GeneID=="gene-Dmel_CG18389")
+E93_D.melanogaster_TPM
+
+#write.csv(E93_D.melanogaster_TPM, file = "E93_D.melanogaster_TPM.csv", row.names=TRUE)
+```
+## Trichomalopsis sarcophagae  gene-E93_homolog, Holometabolous
+
+### read data
+ -  Load TPM table
+```{r}
+T.sarcophagae_TPM <- read.csv("T.sarcophagae_TPM.csv", row.names = 1)
+```
+
+
+- Load Metdata
+
+```{r}
+Meatdata_ds3exp_T.sarcophagae <- read_delim("T.sarcophagae_metadata.txt", 
+     delim = "\t", escape_double = FALSE, 
+     trim_ws = TRUE)
+```
+
+- As DF 
+```{r}
+Meatdata_ds3exp_T.sarcophagae_DF<-as.data.frame(Meatdata_ds3exp_T.sarcophagae)
+rownames(Meatdata_ds3exp_T.sarcophagae_DF)<-(Meatdata_ds3exp_T.sarcophagae_DF$Sample)
+```
+
+- TPM long format and metadata
+```{r}
+library(tidyr)
+ds_T.sarcophagae_TPM_long<-T.sarcophagae_TPM %>%
+  as.data.frame() %>% 
+  tibble::rownames_to_column(var = "GeneID") %>% 
+  pivot_longer(cols=colnames(T.sarcophagae_TPM),names_to="Sample", values_to="TPM") %>% 
+   dplyr::left_join(Meatdata_ds3exp_T.sarcophagae_DF, by=c("Sample"="Sample")) 
+```
+
+- E93 expression table
+```{r}
+ E93_T.sarcophagae_TPM<-ds_T.sarcophagae_TPM_long %>%
+   filter(GeneID=="gene-E93_homolog")
+E93_T.sarcophagae_TPM
+
+#write.csv(E93_T.sarcophagae_TPM, file = "E93_T.sarcophagae_TPM.csv", row.names=TRUE)
+```
+
+#Ischnura senegalensis - we have ony TPM valus
+
+ -  Load TPM table
+```{r}
+I.senegalensis_TPM <- read.csv("E93_I.senegalensis_TPM.csv", row.names = 1)
+```
+
+## merge E93 data
+### all species
+-all species table
+```{r}
+E93_all_species<-bind_rows(E93_A.gossypii_TPM, I.senegalensis_TPM ,
+E93_A.mellifera_TPM,
+E93_A.pisum_TPM,
+E93_A.stephensi_TPM,
+E93_B.dorsalis_TPM,
+E93_B.germanica_TPM,
+E93_B.mori_TPM,
+E93_B.tabaci_TPM,
+E93_C.dipterum_TPM,
+E93_C.floridanus_TPM,
+E93_C.quinquefasciatus_TPM,
+E93_D.citri_TPM,
+E93_D.melanogaster_TPM,
+E93_F.candida_TPM,
+E93_G.bimaculatus_TPM,
+E93_H.illucens_TPM,
+E93_H.saltator_TPM,
+E93_L.heterotoma_TPM,
+E93_M.pharaonis_TPM,
+E93_M.sexta_TPM,
+E93_N.lugens_TPM,
+E93_O.brunneus_TPM,
+E93_P.polytes_TPM,
+E93_P.rapae_TPM,
+E93_P.xylostella_TPM,
+E93_S.exigua_TPM,
+E93_T.castaneum_TPM,
+E93_T.sarcophagae_TPM,
+E93_V.tameamea_TPM,
+E93_Z.cucurbitae_TPM,
+E93_Z.nevadensis_TPM)
+
+#write.csv(E93_all_species, file = "E93_all_species_TPM.csv", row.names=TRUE)
+```
+
+
+## RATIO
+- filter highest TPM values  for each condition for species
+```{r}
+
+highest_TPM<-E93_all_species%>% 
+  group_by(Species, Condition)%>%
+  filter(TPM== max(TPM))
+
+# for 10 SRR8960046_Aligned.sortedByCoord.out.bam Bactrocera dorsalis - the same value as 2 pupa  - remove row 11
+
+highest_TPM<- highest_TPM[-c(11),]
+```
+
+-find index list which includes the highest values
+
+```{r}
+highest_TPM$filter <- paste(highest_TPM$Index, "_", highest_TPM$Species) # add filter column to avoid duplicated during filtering
+E93_all_species$filter <- paste(E93_all_species$Index, "_", E93_all_species$Species)
+
+index_list <-c(highest_TPM$filter) # extract index with highest TPM
+
+highest_TPM_selected <-E93_all_species[E93_all_species$filter %in% index_list,] # extract all data for highest indexes              
+              
+```
+
+- calculate means
+```{r}
+highest_TPM_selected_mean<-highest_TPM_selected%>% # count mean for each condition for each species
+  group_by(Species, Condition, Metamorphosis)%>% 
+  summarise(mean=mean(as.numeric(TPM)))
+
+#write_csv(highest_TPM_selected_mean, file = "highest_TPM_selected_mean.csv")
+```
+- calculate means ratio
+```{r}
+not_embryo_mean<-highest_TPM_selected_mean[!(highest_TPM_selected_mean$Condition=="embryo"),] # extract data for not-embryo stages
+embryo_mean<-highest_TPM_selected_mean[(highest_TPM_selected_mean$Condition=="embryo"),] # extract data for embryo stages
+# ratio_R_highest<- as.data.frame(not_embryo_mean$mean/embryo_mean$mean) # table with ratios but no descriptions
+
+
+
+ratio_peak<-not_embryo_mean%>%subset(.,select = -c(Condition, mean)) # extract Organism and metabolysm
+
+ratio_peak$Ratio<-(not_embryo_mean$mean/embryo_mean$mean) # add ratio of means
+
+ratio_peak$Log2ratio<-log2(ratio_peak$Ratio) # add log2(ratio)
+
+ratio_peak
+
+#write_csv(ratio_peak, file = "ratio_peak.csv")
+```
+
+
+
+## add data from qPCR 
+
+```{r}
+qPCR_embryo_neo <-data.frame(Species = c("Blattella germanica", "Frankliniella occidentalis", "Haplothrips brevitubus", "Planococcus kraunhiae", "Cloeon dipterum", "Thermobia domestica"), Condition = rep(c("embryo"), times=6), Value =as.numeric( c("22.6","0.0024","1.20E-07","0.006083","243","0.25")),Metamorphosis = c("Hemimetabolous", "Neometabolous", "Neometabolous", "Neometabolous", "Hemimetabolous", "Ametabolous"))
+
+qPCR_not_embryo_neo <-data.frame(Species = c("Blattella germanica", "Frankliniella occidentalis", "Haplothrips brevitubus", "Planococcus kraunhiae", "Cloeon dipterum", "Thermobia domestica"), Condition = rep(c("not_embryo"), times=6), Value =as.numeric(c("33","0.0226","1.14E-03","0.583559","60","0.13")),  Metamorphosis = c("Hemimetabolous", "Neometabolous", "Neometabolous", "Neometabolous", "Hemimetabolous", "Ametabolous"))
+
+ratio_qPCR_neo<-qPCR_embryo_neo%>%subset(.,select = -c(Condition, Value))
+ratio_qPCR_neo$Ratio<-(qPCR_not_embryo_neo$Value/qPCR_embryo_neo$Value) # add ratio of means
+
+ratio_qPCR_neo$Log2ratio<-log2(ratio_qPCR_neo$Ratio) # add log2(ratio)
+
+ratio_qPCR_neo$Experiment<-"qPCR"
+
+ratio_peak$Experiment<-"RNA-Seq"
+
+ratio_peak_qPCR_neo <- rbind(ratio_peak,ratio_qPCR_neo)
+
+#write_csv(ratio_peak_qPCR_neo , file = "ratio_peak_qPCR_neo.csv")
+
+library(ggthemes )
+ratio_peak_qPCR_neo$plot<-c(
+"3",
+"4",
+"3",
+"4",
+"4",
+"3",
+"2",
+"4",
+"4",
+"2",
+"4",
+"3",
+"4",
+"1",
+"2",
+"4",
+"4",
+"2",
+"4",
+"4",
+"4",
+"2",
+"4",
+"4",
+"4",
+"4",
+"4",
+"4",
+"4",
+"4",
+"4",
+"2",
+"2",
+"2",
+"2",
+"2",
+"2",
+"1")
+```
+
+
+## surch for taxanomic data (https://taylorreiter.github.io/2017-07-28-Taxonomy-from-Species-Name-in-R/)
+```{r}
+library("taxize")
+species_list<-ratio_peak_qPCR_neo$Species
+taxids<-lapply(species_list, function(x) get_ids(sci_com =x, db = "ncbi"))
+
+df <- data.frame(matrix(unlist(taxids), nrow=length(taxids), byrow=TRUE), stringsAsFactors=FALSE)
+#colnames(df)[1] <- 'a'
+write_csv(df, file = "taxaIDs.csv")
+
+#df<- do.call(rbind.data.frame, taxids)
+#avector <- as.vector(df['ncbi'])
+
+#ratio_peak_qPCR_neo$TaxID<-df
+
+ratio_peak_qPCR_neo$TaxID<-c("7029",
+"30069",
+"80765",
+"7460",
+"27457",
+"7038",
+"6973",
+"7091",
+"104421",
+"197152",
+"7176",
+"121845",
+"7227",
+"158441",
+"6999",
+"610380",
+"343691",
+"126660",
+"63436",
+"7130",
+"307658",
+"108931",
+"486640",
+"76194",
+"64459",
+"51655",
+"7107",
+"7070",
+"543379",
+"334116",
+"28588",
+"136037",
+"6973",
+"133901",
+"866910",
+"494597",
+"197152",
+"89055")
+
+
+
+
+
+TaxClassification<-classification(ratio_peak_qPCR_neo$TaxID, db = "ncbi")
+
+length(TaxClassification)
+taxdata <- data.frame()
+for(x in 1:length(TaxClassification)){
+    tryCatch({
+      superkingdom=filter(TaxClassification[[x]], rank =="superkingdom")$name
+      kingdom=filter(TaxClassification[[x]], rank =="kingdom")$name
+      phylum=filter(TaxClassification[[x]], rank =="phylum")$name
+      subphylum=filter(TaxClassification[[x]], rank =="subphylum")$name
+      superclass=filter(TaxClassification[[x]], rank =="superclass")$name
+      class=filter(TaxClassification[[x]], rank =="class")$name
+      subclass=filter(TaxClassification[[x]], rank =="subclass")$name
+      infraclass=filter(TaxClassification[[x]], rank =="infraclass")$name
+      cohort=filter(TaxClassification[[x]], rank =="cohort")$name
+        superorder=filter(TaxClassification[[x]], rank =="superorder")$name
+      order=filter(TaxClassification[[x]], rank =="order")$name
+        suborder=filter(TaxClassification[[x]], rank =="suborder")$name
+        infraorder=filter(TaxClassification[[x]], rank =="infraorder")$name
+        superfamily=filter(TaxClassification[[x]], rank =="superfamily")$name
+      family=filter(TaxClassification[[x]], rank =="family")$name
+            subfamily=filter(TaxClassification[[x]], rank =="subfamily")$name
+      genus=filter(TaxClassification[[x]], rank =="genus")$name
+            subgenus=filter(TaxClassification[[x]], rank =="subgenus")$name
+      species=filter(TaxClassification[[x]], rank =="species")$name
+      strain=filter(TaxClassification[[x]], rank =="strain")$name
+      row <- data.frame(cbind(taxID=names(TaxClassification[x]),superkingdom=superkingdom,kingdom=kingdom,phylum=phylum,subphylum=subphylum, superclass=superclass,class=class,subclass=subclass, infraclass=infraclass,cohort=cohort, superorder=superorder,order=order,suborder=suborder,infraorder=infraorder,superfamily=superfamily, family=family,genus=genus,species=species,strain=strain))
+      taxdata <- bind_rows(taxdata, row)    
+    }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+}
+dim(taxdata)
+
+ratio_peak_qPCR_neo_texonomy<- ratio_peak_qPCR_neo %>% dplyr::left_join(taxdata, by=c("Species"="species")) 
+
+#write_csv(ratio_peak_qPCR_neo_texonomy, file = "ratio_peak_qPCR_neo_texonomy.csv")
+```
+```{r}
+library(randomcoloR)
+n <- 19
+palette <- distinctColorPalette(n)
+```
+
+```{r}
+ratio_peak_qPCR_neo_texonomy_val <- read_csv("/mnt/DATADISK/SRA_insects/all_sra_graphs/ratio_peak_qPCR_neo_texonomy_12.09.2022.csv")
+ratio_peak_qPCR_neo_texonomy<-ratio_peak_qPCR_neo_texonomy_val
+
+ratio_peak_qPCR_texonomy_plot_order_neo<-ratio_peak_qPCR_neo_texonomy%>%
+  ggplot(., aes(x=reorder(Metamorphosis, as.numeric(plot)) ,color=Order, y= as.numeric(Log2ratio))) +  scale_y_continuous(breaks = seq(-2,14,by = 1))+
+  geom_boxplot(varwidth = T, alpha =0.0001, color = "darkgray" ) +
+     geom_point( position = position_jitterdodge(), size = 4,(aes(shape = factor(Method)))) +
+    scale_shape_manual(values=c(17, 16))+
+
+    geom_text_repel(aes(label =Species), size = 3.5 , colour = 'black', max.overlaps =100,fontface = "italic")+
+    #geom_label_repel(aes(label = Organism),
+                  #box.padding   = 0.35, 
+                  #point.padding = 0.5,
+                  #segment.color = 'grey50',
+                  #size = 3) +
+    theme_bw()+
+
+    theme(axis.text.x = element_text(hjust = .8, size=10))+
+    labs(y="Log2(PA/E ratio)", x= "Metamorphosis",fill ="Legend", shape="Method", )+ #guides(color=FALSE) +
+  theme(axis.title=element_text(size=10))+
+    scale_color_manual(values =palette )
+
+ratio_peak_qPCR_texonomy_plot_order_neo
+```
+
+# Calculate stats
+## saparate data
+```{r}
+hemi<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "Hemimetabolan")
+holo<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "Holometabolan")
+neo<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "“Neometabolan”")
+amet<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "Ametabolan")
+```
+
+## mean
+```{r}
+hemi_mean<-mean(hemi$Ratio)
+holo_mean<-mean(holo$Ratio)
+neo_mean<-mean(neo$Ratio)
+amet_mean<-mean(amet$Ratio)
+
+hemi_mean
+holo_mean
+neo_mean
+amet_mean
+```
+#SEM
+```{r}
+library(plotrix)
+hemi_SEM<-std.error(hemi$Ratio)
+holo_SEM<-std.error(holo$Ratio)
+neo_SEM<-std.error(neo$Ratio)
+amet_SEM<-std.error(amet$Ratio)
+
+hemi_SEM
+holo_SEM
+neo_SEM
+amet_SEM
+```
+
+## wilcox test amet vs holo
+```{r}
+amet_holo<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "Holometabolan"| Metamorphosis=="Ametabolan")
+
+
+test_wixlcox_ratio_a_holo_two_side <- wilcox.test(amet_holo$Ratio ~ amet_holo$Metamorphosis, paired = FALSE, alternative = "two.sided", mu = 0.0, exact = TRUE, correct = FALSE, conf.int = TRUE, conf.level = 0.99)
+test_wixlcox_ratio_a_holo_two_side
+```
+
+## wilcox test hemi vs amet
+```{r}
+amet_hemi<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "Hemimetabolan"| Metamorphosis=="Ametabolan")
+
+
+test_wixlcox_ratio_a_hemi_two_side <- wilcox.test(amet_hemi$Ratio ~ amet_hemi$Metamorphosis, paired = FALSE, alternative = "two.sided", mu = 0.0, exact = TRUE, correct = FALSE, conf.int = TRUE, conf.level = 0.99)
+test_wixlcox_ratio_a_hemi_two_side
+```
+## wilcox test neo vs amet
+```{r}
+amet_neo<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "“Neometabolan”"| Metamorphosis=="Ametabolan")
+
+
+test_wixlcox_ratio_a_neo_two_side <- wilcox.test(amet_neo$Ratio ~ amet_neo$Metamorphosis, paired = FALSE, alternative = "two.sided", mu = 0.0, exact = TRUE, correct = FALSE, conf.int = TRUE, conf.level = 0.99)
+test_wixlcox_ratio_a_neo_two_side
+```
+
+## wilcox test hemi vs neo
+```{r}
+hemi_neo<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "Hemimetabolan"| Metamorphosis=="“Neometabolan”")
+
+
+test_wixlcox_ratio_hemi_neo_two_side <- wilcox.test(hemi_neo$Ratio ~ hemi_neo$Metamorphosis, paired = FALSE, alternative = "two.sided", mu = 0.0, exact = TRUE, correct = FALSE, conf.int = TRUE, conf.level = 0.99)
+test_wixlcox_ratio_hemi_neo_two_side
+```
+
+## wilcox test hemi vs neo
+```{r}
+hemi_holo<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "Hemimetabolan"| Metamorphosis=="Holometabolan")
+
+
+test_wixlcox_ratio_hemi_holo_two_side <- wilcox.test(hemi_holo$Ratio ~ hemi_holo$Metamorphosis, paired = FALSE, alternative = "two.sided", mu = 0.0, exact = TRUE, correct = FALSE, conf.int = TRUE, conf.level = 0.99)
+test_wixlcox_ratio_hemi_holo_two_side
+```
+
+## wilcox test hemi vs neo
+```{r}
+neo_holo<-ratio_peak_qPCR_neo_texonomy %>% filter(, Metamorphosis == "“Neometabolan”"| Metamorphosis=="Holometabolan")
+
+
+test_wixlcox_ratio_neo_holo_two_side <- wilcox.test(neo_holo$Ratio ~ neo_holo$Metamorphosis, paired = FALSE, alternative = "two.sided", mu = 0.0, exact = TRUE, correct = FALSE, conf.int = TRUE, conf.level = 0.99)
+test_wixlcox_ratio_neo_holo_two_side
+```
+
+```{r}
+sessionInfo()
+```
+
