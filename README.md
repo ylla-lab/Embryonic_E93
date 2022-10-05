@@ -19,8 +19,8 @@ This repository contains the scripts written by Dr. Machaj for analyzing the dat
 Scripts are organized in two main analysis:
 
 1. [RNA-seq analysis of *B. germanica* libraries under E93 knockdown compared to control](https://github.com/ylla-lab/Embryonic_E93/tree/master/RNAseq_Bger_dsE93)
- 1. [Prepare data, QC, and mapping](RNAseq_Bger_dsE93/1_Data_download_to_mapping.md )
- 2. [Table of counts, DEA, GSEA, etc.](https://htmlpreview.github.io/?https://raw.githubusercontent.com/ylla-lab/Embryonic_E93/master/RNAseq_Bger_dsE93/2_E93_R_read_count_to_GSEA.html)
+	1. [Prepare data, QC, and mapping](RNAseq_Bger_dsE93/1_Data_download_to_mapping.md )
+	2. [Table of counts, DEA, GSEA, etc.](https://htmlpreview.github.io/?https://raw.githubusercontent.com/ylla-lab/Embryonic_E93/master/RNAseq_Bger_dsE93/2_E93_R_read_count_to_GSEA.html)
 2. [Comparison of E93 expression in embryo vs pre-adult across hexapods](https://github.com/ylla-lab/Embryonic_E93/tree/master/RNAseq_multipleSpp_E93exp)
 
 
