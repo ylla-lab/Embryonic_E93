@@ -22,6 +22,11 @@ Scripts are organized in two main analysis:
 	1. [Prepare data, QC, and mapping](RNAseq_Bger_dsE93/1_Data_download_to_mapping.md )
 	2. [Table of counts, DEA, GSEA, etc.](https://htmlpreview.github.io/?https://raw.githubusercontent.com/ylla-lab/Embryonic_E93/master/RNAseq_Bger_dsE93/2_E93_R_read_count_to_GSEA.html)
 2. [Comparison of E93 expression in embryo vs pre-adult across hexapods](https://github.com/ylla-lab/Embryonic_E93/tree/master/RNAseq_multipleSpp_E93exp)
+	1. [Identify appropriate datasets in NCBI-SRA](https://github.com/ylla-lab/Embryonic_E93/blob/master/RNAseq_multipleSpp_E93exp/1_Filtering-SRA-data.md)
+	2. [Download genomes form NCBI](https://github.com/ylla-lab/Embryonic_E93/blob/master/RNAseq_multipleSpp_E93exp/2_Download_genomes_and_index.md)
+	3. [Download and map RNA-seq data from NCBI-SRA](https://github.com/ylla-lab/Embryonic_E93/blob/master/RNAseq_multipleSpp_E93exp/3_Download_SRA_data_filter_gality_control_mapping.md)
+	4. [Generate tables of counts](https://github.com/ylla-lab/Embryonic_E93/blob/master/RNAseq_multipleSpp_E93exp/4_Generate_table_of_counts.Rmd)
+	5. [Calculate E93 expression ratio in pre-adult vs embryo](https://htmlpreview.github.io/?https://raw.githubusercontent.com/ylla-lab/Embryonic_E93/master/RNAseq_multipleSpp_E93exp/5_SRA_insects_E93_ratios.html)
 
 
 
