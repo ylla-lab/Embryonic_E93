@@ -7,9 +7,10 @@
 --------------
 
 
-- Article *"Reduction of embryonic E93 expression as a key factor for the evolution of insect metamorphosis"*
+- Article *"[Reduction of embryonic E93 expression as a key factor for the evolution of insect metamorphosis](https://www.biorxiv.org/content/10.1101/2022.10.04.510826v1)"*
+- Link to preprint in bioRxiv: https://www.biorxiv.org/content/10.1101/2022.10.04.510826v1
 - Scripts author: Gabriela Machaj, 2022
-- Laboratory of Bioinformatics and Genome Biology, Jagiellonian University
+- [Laboratory of Bioinformatics and Genome Biology](https://ylla-lab.github.io/), Jagiellonian University
 
 --------------
 
